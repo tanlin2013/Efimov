@@ -3,7 +3,7 @@ using LinearAlgebra
 using DataFrames
 using Plots
 
-"Build identity MPS and MPO for N qubits"
+"Build identity MPS and MPO for N qubits."
 function I(N::Int)
 	IMPO = MPO(sites)
 	IMPS = MPS(sites)
@@ -20,7 +20,7 @@ function I(N::Int)
 	return IMPS, IMPO
 end
 
-"build f(x)=e^{cx} MPS for N qubits"
+"Build f(x)=e^{cx} MPS for N qubits."
 function EX(N::Int, c::Float64)
 	EXMPO = MPO(sites)
 	bond1 = Index[Index(1, "link, l=$a") for a ∈ 1:N-1]
@@ -45,7 +45,7 @@ function EX(N::Int, c::Float64)
 	return EXMPO
 end
 
-"build f(x)=cos(kx) MPS for N qubits"
+"Build f(x)=cos(kx) MPS for N qubits."
 function COS(N::Int, k::Float64)
 	CMPS = MPS(sites)
 	bond = Index[Index(2, "link, l=$a") for a ∈ 1:N-1]
@@ -80,7 +80,7 @@ function COS(N::Int, k::Float64)
 	return CMPS
 end
 
-"Build f(x)=x+shi MPS for N qubits"
+"Build f(x)=x+shi MPS for N qubits."
 function X(N::Int, shi::Float64)
 	XMPO = MPO(sites)
 	bond = Index[Index(2, "link, l=$a") for a ∈ 1:N-1]
@@ -265,7 +265,41 @@ function DD(N::Int, which::Symbol = :NBC)
 	return DDMPO
 end
 
-"Conbine the bond indices of MPO"
+"Build integral operator."
+function IN(N::Int)
+	INMPO=MPO(sites)
+	  bond2 = Index[Index(2) for a in 1:N]
+	  A = ITensor(sites[1], prime(sites[1]), bond2[1])
+	  A[sites[1]=>1, prime(sites[1])=>1, bond2[1]=>1] = 1.0 / 2.0
+	  A[sites[1]=>1, prime(sites[1])=>2, bond2[1]=>1] = 1.0 / 2.0
+	  A[sites[1]=>2, prime(sites[1])=>1, bond2[1]=>1] = 1.0 / 2.0
+	  A[sites[1]=>2, prime(sites[1])=>2, bond2[1]=>1] = 1.0 / 2.0
+	  A[sites[1]=>1, prime(sites[1])=>2, bond2[1]=>2] = 1.0 / 2.0
+	  A[sites[1]=>1, prime(sites[1])=>1, bond2[1]=>2] = 1.0 / 2.0
+	  A[sites[1]=>2, prime(sites[1])=>2, bond2[1]=>2] = 1.0 / 2.0
+	  INMPO[1] = A
+  
+	  for a in 2:N-1
+		  A = ITensor(sites[a], prime(sites[a]), bond2[a-1], bond2[a])
+		  A[sites[a]=>1, prime(sites[a])=>1, bond2[a-1]=>1, bond2[a]=>1] = 1.0 / 2.0
+		  A[sites[a]=>1, prime(sites[a])=>2, bond2[a-1]=>1, bond2[a]=>1] = 1.0 / 2.0
+		  A[sites[a]=>2, prime(sites[a])=>1, bond2[a-1]=>1, bond2[a]=>1] = 1.0 / 2.0
+		  A[sites[a]=>2, prime(sites[a])=>2, bond2[a-1]=>1, bond2[a]=>1] = 1.0 / 2.0
+		  A[sites[a]=>1, prime(sites[a])=>2, bond2[a-1]=>1, bond2[a]=>2] = 1.0 / 2.0
+		  A[sites[a]=>1, prime(sites[a])=>1, bond2[a-1]=>2, bond2[a]=>2] = 1.0 / 2.0
+		  A[sites[a]=>2, prime(sites[a])=>2, bond2[a-1]=>2, bond2[a]=>2] = 1.0 / 2.0
+		  INMPO[a] = A
+	  end
+  
+	  A = ITensor(sites[N], prime(sites[N]), bond2[N-1])
+	  A[sites[N]=>1, prime(sites[N])=>2, bond2[N-1]=>1] = 1.0 / 2.0
+	  A[sites[N]=>1, prime(sites[N])=>1, bond2[N-1]=>2] = 1.0 / 2.0
+	  A[sites[N]=>2, prime(sites[N])=>2, bond2[N-1]=>2] = 1.0 / 2.0
+	  INMPO[N] = A
+	  return INMPO
+  end
+
+"Conbine the bond indices of MPO."
 function cfc(mpo::MPO)
 	C = []
 	c = mpo[1] * IMPO[1]
@@ -282,7 +316,7 @@ function cfc(mpo::MPO)
 	return mpo
 end
 
-"Conbine the bond indices of MPS"
+"Conbine the bond indices of MPS."
 function csc(mps::MPS)
 	C = []
 	c = mps[1] * IMPS[1]
@@ -299,7 +333,7 @@ function csc(mps::MPS)
 	return mps
 end
 
-"Add two MPOs without contraction (julia will contract automatically if you write mpo1+mpo2)"
+"Add two MPOs without contraction (julia will contract automatically if you write mpo1+mpo2)."
 function ADD(mpo1::MPO, mpo2::MPO)
 	mpo = MPO(sites)
 	b = []
@@ -364,7 +398,7 @@ function ADD(mpo1::MPO, mpo2::MPO)
 	return mpo
 end
 
-"Transform mps into function"
+"Transform mps into function."
 function mps2f(mps::MPS)
 	x = Vector{Float64}()
 	y = Vector{Float64}()
@@ -389,7 +423,7 @@ function mps2f(mps::MPS)
 	return x, y, nor
 end
 
-"Calculate Frobenius norm error between two vectors"
+"Calculate Frobenius norm error between two vectors."
 function ERROR(N::Int, y::Vector{Float64}, z::Vector{Float64})
 	nory = 0.0
 	norz = 0.0
@@ -409,7 +443,7 @@ function ERROR(N::Int, y::Vector{Float64}, z::Vector{Float64})
 	return err
 end
 
-"Calculate the each bond dimension and totol elements of MPS"
+"Calculate the each bond dimension and totol elements of MPS."
 function BDIM(N::Int, mps::MPS)
 	bdim = Vector{Int64}()
 	for i in 1:N-1
@@ -425,7 +459,7 @@ function BDIM(N::Int, mps::MPS)
 	return bdim, ele
 end
 
-"Read MPS in HDF5 file"
+"Read MPS in HDF5 file."
 function reading_mps(file::String)
 	bond = []
 	rmps = h5read(file, "MPS")
@@ -560,7 +594,7 @@ function reading_mps2(file::String)
 end
 
 
-"Transform MPS into MPO, which means the operator of diagonal matrix"
+"Transform MPS into MPO, which means the operator of diagonal matrix."
 function mps2mpo(IRMPS::MPS)
 	IRMPO = MPO(sites)
 	bonds = []
@@ -597,11 +631,11 @@ function mps2mpo(IRMPS::MPS)
 end
 
 
-"use dmrg() to solve the first n states
+"use dmrg() to solve the first n states.
 
-z is the vector you want calculate the Frobenius norm error
+z is the vector you want calculate the Frobenius norm error.
 
-m is the number of sweep interval you want to calculate the error(unfinish and remain 1 now)"
+m is the number of sweep interval you want to calculate the error(unfinish and remain 1 now)."
 function muti_rdmrg(mpo::MPO, mps0::MPS, sweep::Int, kdim::Int, maxbdim::Int, threshold::Float64, z::Matrix{Float64}, n::Int, m::Int)
 	err = Matrix{Float64}(undef, n, sweep + 1) #Frobenius norm error for each state
 	bd = Array{Int}(undef, n, sweep + 1, N - 1) #each bond dimension for each state
