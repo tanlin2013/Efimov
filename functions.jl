@@ -9,7 +9,7 @@ function I(sites::Vector{Index{Int64}})
 	d = dim(sites[1])
 	IMPO = MPO(sites)
 	IMPS = MPS(sites)
-	bond1 = Index[Index(1, "Link, l=$a") for a ∈ 1:N-1]
+	bond1 = [Index(1, "Link, l=$a") for a ∈ 1:N-1]
 	IO = ITensor(sites[1], prime(sites[1]), bond1[1])
 	IS = ITensor(sites[1], bond1[1])
 	for i in 1:d
@@ -43,7 +43,7 @@ end
 function FONES(sites::Vector{Index{Int64}})
 	N = length(sites)
 	FMPO = MPO(sites)
-	bond1 = Index[Index(1, "Link, l=$a") for a ∈ 1:N-1]
+	bond1 = [Index(1, "Link, l=$a") for a ∈ 1:N-1]
 
 	A = ITensor(sites[1], prime(sites[1]), bond1[1])
 	A[sites[1]=>1, prime(sites[1])=>1, bond1[1]=>1] = 1.0
@@ -70,11 +70,11 @@ function FONES(sites::Vector{Index{Int64}})
 	return FMPO
 end
 
-"Build f(x)=exp(cx) MPO for N qubits."
+"Build f(x) = exp(cx) MPO for N qubits."
 function EX(sites::Vector{Index{Int64}}, c::Float64)
 	N = length(sites)
 	EXMPO = MPO(sites)
-	bond1 = Index[Index(1, "Link, l=$a") for a ∈ 1:N-1]
+	bond1 = [Index(1, "Link, l=$a") for a ∈ 1:N-1]
 
 	A = ITensor(sites[1], prime(sites[1]), bond1[1])
 	A[sites[1]=>1, prime(sites[1])=>1, bond1[1]=>1] = 1.0
@@ -99,7 +99,7 @@ end
 function COS(sites::Vector{Index{Int64}}, k::Float64)
 	N = length(sites)
 	CMPS = MPS(sites)
-	bond = Index[Index(2, "Link, l=$a") for a ∈ 1:N-1]
+	bond = [Index(2, "Link, l=$a") for a ∈ 1:N-1]
 
 	A = ITensor(sites[1], bond[1])
 	A[sites[1]=>1, bond[1]=>1] = 1.0
@@ -135,7 +135,7 @@ end
 function X(sites::Vector{Index{Int64}}, shi::Float64)
 	N = length(sites)
 	XMPO = MPO(sites)
-	bond2 = Index[Index(2, "Link, l=$a") for a ∈ 1:N-1]
+	bond2 = [Index(2, "Link, l=$a") for a ∈ 1:N-1]
 	A = ITensor(sites[1], prime(sites[1]), bond2[1])
 	A[sites[1]=>2, prime(sites[1])=>2, bond2[1]=>1] = 1.0 / 2.0^(N) + shi / N
 	A[sites[1]=>2, prime(sites[1])=>2, bond2[1]=>2] = 1.0
@@ -170,7 +170,7 @@ end
 function STEP(sites::Vector{Index{Int64}}, pos::AbstractVector{Int})
 	N = length(sites)
 	SMPO = MPO(sites)
-	bond2 = Index[Index(2, "Link, l=$a") for a ∈ 1:N-1]
+	bond2 = [Index(2, "Link, l=$a") for a ∈ 1:N-1]
 	S = ITensor(sites[N], prime(sites[N]), bond2[N-1])
 	if pos[N] == 1
 		S[sites[N]=>2, prime(sites[N])=>2, bond2[N-1]=>2] = 1.0
@@ -215,7 +215,7 @@ end
 function T(sites::Vector{Index{Int64}}, pos::AbstractVector{Int})
 	N = length(sites)
 	TMPO = MPO(sites)
-	bond2 = Index[Index(2, "Link, l=$a") for a ∈ 1:N-1]
+	bond2 = [Index(2, "Link, l=$a") for a ∈ 1:N-1]
 
 	A = ITensor(sites[1], prime(sites[1]), bond2[1])
 	if pos[1] == 1
@@ -262,7 +262,7 @@ function DD(sites::Vector{Index{Int64}}, which::Symbol = :NBC; dx2::Float64 = 1.
 	N = length(sites)
 	DDMPO = MPO(sites)
 	if which == :NBC
-		bond5 = Index[Index(5, "Link, l=$a") for a ∈ 1:N-1]
+		bond5 = [Index(5, "Link, l=$a") for a ∈ 1:N-1]
 
 		DD = ITensor(sites[1], prime(sites[1]), bond5[1])
 		DD[sites[1]=>2, prime(sites[1])=>1, bond5[1]=>1] = 1.0/dx2^(1/N)
@@ -297,7 +297,7 @@ function DD(sites::Vector{Index{Int64}}, which::Symbol = :NBC; dx2::Float64 = 1.
 		DD[sites[N]=>2, prime(sites[N])=>2, bond5[N-1]=>5] = 1.0/dx2^(1/N)
 		DDMPO[N] = DD
 	elseif which == :DBC
-		bond3 = Index[Index(3, "Link, l=$a") for a ∈ 1:N-1]
+		bond3 = [Index(3, "Link, l=$a") for a ∈ 1:N-1]
 
 		DD = ITensor(sites[1], prime(sites[1]), bond3[1])
 		DD[sites[1]=>2, prime(sites[1])=>1, bond3[1]=>1] = 1.0/dx2^(1/N)
@@ -327,7 +327,7 @@ function DD(sites::Vector{Index{Int64}}, which::Symbol = :NBC; dx2::Float64 = 1.
 		DD[sites[N]=>1, prime(sites[N])=>2, bond3[N-1]=>2] = 1.0/dx2^(1/N)
 		DDMPO[N] = DD
 	elseif which == :PBC
-		bond3 = Index[Index(3, "Link, l=$a") for a ∈ 1:N-1]
+		bond3 = [Index(3, "Link, l=$a") for a ∈ 1:N-1]
 
 		DD = ITensor(sites[1], prime(sites[1]), bond3[1])
 		DD[sites[1]=>2, prime(sites[1])=>1, bond3[1]=>1] = 1.0/dx2^(1/N)
@@ -366,7 +366,7 @@ end
 "Build second-order differential operator in expponetial coordinate into MPO for N qubits with overall factor dx2. B.C.: f'(0)=0 and f(1)=0"
 function EDD(sites::Vector{Index{Int64}}, c::Float64; dx2::Float64 = 1.0)
 	N = length(sites)
-	bond4 = Index[Index(4, "Link, l=$a") for a ∈ 1:N-1]
+	bond4 = [Index(4, "Link, l=$a") for a ∈ 1:N-1]
 	DDMPO = MPO(sites)
 
 	DD = ITensor(sites[1], prime(sites[1]), bond4[1])
@@ -405,7 +405,7 @@ end
 function IN(sites::Vector{Index{Int64}}; dx::Float64 = 1.0)
 	N = length(sites)
 	INMPO = MPO(sites)
-	bond2 = Index[Index(2) for a in 1:N]
+	bond2 = [Index(2) for a in 1:N]
 	A = ITensor(sites[1], prime(sites[1]), bond2[1])
 	A[sites[1]=>1, prime(sites[1])=>1, bond2[1]=>1] = 1.0*dx^(1/N)
 	A[sites[1]=>1, prime(sites[1])=>2, bond2[1]=>1] = 1.0*dx^(1/N)
@@ -436,25 +436,25 @@ function IN(sites::Vector{Index{Int64}}; dx::Float64 = 1.0)
 	return INMPO
 end
 
-"Conbine the bond indices of MPO."
-function cfc(mpo::MPO)
-	N = length(mpo)
-	sites = [noprime(siteinds(mpo)[i][1]) for i in 1:N]
-	IMPS, IMPO = I(sites)
-	C = []
-	c = mpo[1] * IMPO[1]
-	indices = ITensors.inds(c)
-	push!(C, combiner(indices))
-	mpo[1] = mpo[1] * C[1]
-	for i ∈ 2:N-1
-		c = mpo[i] * IMPO[i] * c
-		indices = ITensors.inds(c)
-		push!(C, combiner(indices))
-		mpo[i] = C[i-1] * mpo[i] * C[i]
-	end
-	mpo[N] = C[N-1] * mpo[N]
-	return mpo
-end
+# "Conbine the bond indices of MPO."
+# function cfc(mpo::MPO)
+# 	N = length(mpo)
+# 	sites = [noprime(siteinds(mpo)[i][1]) for i in 1:N]
+# 	IMPS, IMPO = I(sites)
+# 	C = []
+# 	c = mpo[1] * IMPO[1]
+# 	indices = ITensors.inds(c)
+# 	push!(C, combiner(indices))
+# 	mpo[1] = mpo[1] * C[1]
+# 	for i ∈ 2:N-1
+# 		c = mpo[i] * IMPO[i] * c
+# 		indices = ITensors.inds(c)
+# 		push!(C, combiner(indices))
+# 		mpo[i] = C[i-1] * mpo[i] * C[i]
+# 	end
+# 	mpo[N] = C[N-1] * mpo[N]
+# 	return mpo
+# end
 
 "Conbine the bond indices of MPS."
 function csc(mps::MPS)
@@ -482,9 +482,7 @@ function ADD(mpo1::MPO, mpo2::MPO)
 	sites = [noprime(siteinds(mpo1)[i][1]) for i in 1:N]
 	d = dim(sites[1])
 	mpo = MPO(sites)
-	b = []
-	b1 = []
-	b2 = []
+	b, b1, b2 = [], [], []
 	push!(b, Int(dim(mpo1[1]) / d^2 + dim(mpo2[1]) / d^2))
 	push!(b1, Int(dim(mpo1[1]) / d^2))
 	push!(b2, Int(dim(mpo2[1]) / d^2))
@@ -493,9 +491,8 @@ function ADD(mpo1::MPO, mpo2::MPO)
 		push!(b1, Int(dim(mpo1[i]) / (d^2 * b1[i-1])))
 		push!(b2, Int(dim(mpo2[i]) / (d^2 * b2[i-1])))
 	end
-	nbond = Index[Index(b[i], "link, l=$i") for i ∈ 1:N-1]
-	bond1 = []
-	bond2 = []
+	nbond = [Index(b[i], "Link, l=$i") for i ∈ 1:N-1]
+	bond1, bond2 = [], []
 	push!(bond1, linkind(mpo1, 1))
 	push!(bond2, linkind(mpo2, 1))
 
@@ -823,7 +820,7 @@ function muti_rdmrg(mpo::MPO, mps0::MPS, sweep::Int, kdim::Int, maxbdim::Int, cu
 	nmps[1] = mps0
 
 	for j in 1:sweep
-		if tmps != nothing
+		if tmps !== nothing
 			energy, mps = dmrg(
 				mpo,
 				tmps,
@@ -860,8 +857,53 @@ function muti_rdmrg(mpo::MPO, mps0::MPS, sweep::Int, kdim::Int, maxbdim::Int, cu
 	return e, nmps, err, bd, ele, f
 end
 
-@info "Check before use(revised by 2025/03/01, update dx in EDD, DD IN). See old version backup in github"
+"Corrction funtion between site a and b."
+function correction(mps::MPS, a::Int, b::Int)
+	N = length(mps)
+	sites = siteinds(mps)
+	exp = Matrix{Float64}(undef, 2, 3)
+	corr = Vector{Float64}(undef, 3)
+	pos = [a,b]
+	mpoxx, mpoyy, mpozz = [MPO(ComplexF64, sites) for _ in 1:3]
 
+	for i in 1:N
+		A = ITensor(ComplexF64, sites[i], prime(sites[i]))
+		for a in 1:2
+			A[sites[i]=>a, prime(sites[i])=>a] = 1.0
+		end
+		mpoxx[i], mpoyy[i], mpozz[i] = [A, A, A]
+	end
 
+	SS = [ITensor(ComplexF64, sites[pos[i]], prime(sites[pos[i]])) for i in 1:2, _ in 1:3]
+	for i in 1:2
+		SS[i, 1][sites[pos[i]]=>1, prime(sites[pos[i]])=>2] = 1.0
+		SS[i, 1][sites[pos[i]]=>2, prime(sites[pos[i]])=>1] = 1.0
+		SS[i, 2][sites[pos[i]]=>2, prime(sites[pos[i]])=>1] = im
+		SS[i, 2][sites[pos[i]]=>1, prime(sites[pos[i]])=>2] = -im
+		SS[i, 3][sites[pos[i]]=>1, prime(sites[pos[i]])=>1] = 1.0
+		SS[i, 3][sites[pos[i]]=>2, prime(sites[pos[i]])=>2] = -1.0
+	end
+	@show SS[2, 3]
+	@show mpozz[b]
+	mpoxx[a], mpoyy[a], mpozz[a] = [SS[1, 1], SS[1, 2], SS[1, 3]]
+	mpoxx[b], mpoyy[b], mpozz[b] = [SS[2, 1], SS[2, 2], SS[2, 3]]
+	
+	XX = inner(mps, noprime(mpoxx*mps))
+	YY = inner(mps, noprime(mpoyy*mps))
+	ZZ = inner(mps, noprime(mpozz*mps))
 
+	nmps = copy(mps)
+	for i in 1:2, j in 1:3
+		nmps[pos[i]] = SS[i, j] * mps[pos[i]]
+		exp[i, j] = abs(inner(mps, noprime(nmps)))
+		nmps[pos[i]] = mps[pos[i]]
+	end
+	for i in 1:3
+		corr[i] = abs(XX) - exp[1,i]*exp[2,i]
+	end
+
+	return corr
+end
+
+@info "Check before use (revised by 2025/03/01, update dx in EDD, DD IN). See old version backup in github"
 
